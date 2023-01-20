@@ -1,0 +1,7 @@
+name = "ModularSquareRoots"
+uuid = "544cf62c-00ce-4949-a641-e1b79df66db1"
+authors = ["byhill <byhill.xi1ej@dralias.com> and contributors"]
+version = "0.1.0"
+
+[compat]
+julia = "1.8"
