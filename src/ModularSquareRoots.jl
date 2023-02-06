@@ -76,6 +76,13 @@ end
 
 Returns an unsorted list of all `0 ≤ x < p` such that `x^2 ≡ n (mod p)`.
 Assumes `p` is prime.
+
+!!! warning
+    This function assumes that `p` is a prime number
+    and does not check to ensure that `p` is indeed prime.
+    The behaviour of `sqrtmodp(n, p)` is undefined when `p` is not prime.
+    Only use this function if you know that `p` is prime.
+    If there is a chance that `p` is not prime, use `sqrtmod(n, p)` instead.
 """
 function sqrtmodp(n::T, p::T) where {T<:Integer}
     n = mod(n, p)
@@ -92,7 +99,7 @@ function sqrtmodp(n::T, p::T) where {T<:Integer}
     # If p = 3 (mod 4) (and passes Euler's criterion),
     # then sqrt(n) = ±n^((p + 1)/4) (mod p)
     if mod(p, 4) == 3
-        r = powermod(n, (p + 1) >> 2, p)
+        r = powermod(n, p >> 2 + 1, p)
         return T[r, p-r]
     end
 
