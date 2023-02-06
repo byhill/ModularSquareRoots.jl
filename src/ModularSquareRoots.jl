@@ -2,37 +2,53 @@ module ModularSquareRoots
 
 using Primes: factor
 
-export modularsquareroots
 export sqrtmod
-export sqrtmodq
 export sqrtmodp
 
-function modularsquareroots(n::Integer, m::Integer)
-    solns = []
-    n = mod(n, m)
-    for x = 0:m÷2
-        powermod(x, 2, m) == n && (push!(solns, x), push!(solns, mod(-x, m)))
-    end
-    return solns
-end
+
+sqrtmod(n::Integer, m::Integer) = sqrtmod(promote(n, m)...)
+sqrtmodp(n::Integer, p::Integer) = sqrtmodp(promote(n, p)...)
+
 
 # Chinese Remainder Theorem
-function crt(a, n, m)
-    return mod(sum(ai * invmod(m ÷ ni, ni) * (m ÷ ni) for (ni, ai) in zip(n, a)), m)
+function crt(a, n, m::T) where {T<:Integer}
+    ans = zero(T)
+    for (ai, ni) in zip(a, n)
+        u = m ÷ ni
+        x = invmod(u, ni) * u
+
+        (y, flag) = Base.mul_with_overflow(ai, x)
+        x = flag ? T(mod(widemul(ai, x), m)) : mod(y, m)
+
+        (y, flag) = Base.add_with_overflow(ans, x)
+        ans = flag ? T(mod(widen(ans) + widen(x), m)) : mod(y, m)
+    end
+
+    return ans
 end
 
 
 """
-    sqrtmod(n::Integer, m::Integer)
+    sqrtmod(n::T, m::T) where {T<:Integer}
 
-Returns an unsorted list of all `0 ≤ x < m` such that `x^2 ≡ n (mod p)`.
+Returns an unsorted list of all `0 ≤ x < m` such that ``x^2 ≡ n (mod m)``.
+
+!!! note
+    Calculating the square root of a composite number
+    is computationally equivalent to integer factorization.
+    If you know that `m` is prime,
+    then consider using `sqrtmodp(n, m)`,
+    which uses a polynomial time algorithm.
 """
 function sqrtmod(n::T, m::T) where {T<:Integer}
+    m ≤ 0 && throw(DomainError(m, "The modulus `m` must be a positive integer"))
+    m == 1 && return T[0]
+
     factorm = factor(m)
     N = (p^k for (p, k) in factorm)
 
     roots = T[]
-    for A in Iterators.product((sqrtmodq(n, p, k) for (p, k) in factorm)...)
+    for A in Iterators.product((sqrtmodq(n, p, T(k)) for (p, k) in factorm)...)
         push!(roots, crt(A, N, m))
     end
 
