@@ -116,8 +116,12 @@ function sqrtmodp(n::T, p::T) where {T<:Integer}
         b = powermod(c, 2^(M - i - 1), p)
         M = i
         c = powermod(b, 2, p)
-        t = mod(t * c, p)
-        R = mod(R * b, p)
+
+        (tc, flag) = Base.mul_with_overflow(t, c)
+        t = flag ? T(mod(widemul(t, c), p)) : mod(tc, p)
+
+        (Rb, flag) = Base.mul_with_overflow(R, b)
+        R = flag ? T(mod(widemul(R, b), p)) : mod(Rb, p)
     end
 end
 
