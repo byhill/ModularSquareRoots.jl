@@ -15,6 +15,37 @@ sqrtmodprime(n::Integer, p::Integer) = sqrtmodprime(promote(n, p)...)
 
 Returns an unsorted list of all `0 ≤ x < m` such that ``x^2 ≡ n (mod m)``.
 
+# Examples
+```julia-repl
+julia> sqrtmod(4, 5)
+2-element Vector{Int64}:
+ 3
+ 2
+
+julia> all(powermod(x, 2, 5) == 4 for x in squareroots)
+true
+
+julia> sqrtmod(1240, 289032)
+8-element Vector{Int64}:
+ 107056
+ 251572
+  10712
+ 155228
+ 278320
+ 133804
+ 181976
+  37460
+
+julia> all(powermod(x, 2, 289032) == 1240 for x in sqrtmod(1240, 289032))
+true
+
+julia> sqrtmod(23, 200)
+Int64[]
+
+julia> !any(powermod(x, 2, 200) == 23 for x in sqrtmod(23, 200))
+true
+```
+
 !!! note
     Calculating the square root of a composite number
     is computationally equivalent to integer factorization.
