@@ -49,7 +49,7 @@ Note that there are no checks in `sqrtmodprime` to ensure that `p` is prime,
 and the output of `sqrtmodprime(n, p)` is undefined when `p` is not prime.
 The onus is on the user to use `sqrtmodprime` correctly.
 
-```
+```julia
 julia> sqrtmodprime(16, 101)
 2-element Vector{Int64}:
  97
