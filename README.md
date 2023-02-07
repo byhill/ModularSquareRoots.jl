@@ -41,3 +41,24 @@ Int64[]
 julia> !any(powermod(x, 2, 200) == 23 for x in sqrtmod(23, 200))
 true
 ```
+
+## Prime Moduli
+If you know that `p = m` is prime,
+then you can additionally use the function `sqrtmodprime(n, p)`.
+Note that there are no checks in `sqrtmodprime` to ensure that `p` is prime,
+and the output of `sqrtmodprime(n, p)` is undefined when `p` is not prime.
+The onus is on the user to use `sqrtmodprime` correctly.
+
+```
+julia> sqrtmodprime(16, 101)
+2-element Vector{Int64}:
+ 97
+  4
+
+julia> sqrtmodprime(15, 101)
+Int64[]
+
+julia> sqrtmodprime(0, 101)
+1-element Vector{Int64}:
+ 0
+```
