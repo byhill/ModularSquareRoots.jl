@@ -13,7 +13,9 @@ sqrtmodprime(n::Integer, p::Integer) = sqrtmodprime(promote(n, p)...)
 """
     sqrtmod(n::Integer, m::Integer)
 
-Returns an unsorted list of all `0 ≤ x < m` such that ``x^2 ≡ n (mod m)``.
+Finds all `0 ≤ x < m` that solve the congruence ``x^2 ≡ n (mod m)``.
+
+Returns an unsorted list.
 
 # Examples
 ```julia-repl
