@@ -5,10 +5,10 @@
 
 ## Overview
 This module provides support for finding modular square-roots.
-In particular, for a given integer `n` and modulus `m`,
-this module provides support for solving the congruence `x^2 ≡ n (mod m)`.
+In particular, for a given integer $n$ and modulus $m$,
+this module provides support for solving the congruence $x^2 \equiv n \pmod m$.
 
-The module exports the function `sqrtmod(n, m)`.
+To do this, you can use the function `sqrtmod(n, m)`.
 
 ```julia
 julia> using ModularSquareRoots
