@@ -3,33 +3,15 @@ module ModularSquareRoots
 using Primes: factor
 
 export sqrtmod
-export sqrtmodp
+export sqrtmodprime
 
 
 sqrtmod(n::Integer, m::Integer) = sqrtmod(promote(n, m)...)
-sqrtmodp(n::Integer, p::Integer) = sqrtmodp(promote(n, p)...)
-
-
-# Chinese Remainder Theorem
-function crt(a, n, m::T) where {T<:Integer}
-    ans = zero(T)
-    for (ai, ni) in zip(a, n)
-        u = m ÷ ni
-        x = invmod(u, ni) * u
-
-        (y, flag) = Base.mul_with_overflow(ai, x)
-        x = flag ? T(mod(widemul(ai, x), m)) : mod(y, m)
-
-        (y, flag) = Base.add_with_overflow(ans, x)
-        ans = flag ? T(mod(widen(ans) + widen(x), m)) : mod(y, m)
-    end
-
-    return ans
-end
+sqrtmodprime(n::Integer, p::Integer) = sqrtmodprime(promote(n, p)...)
 
 
 """
-    sqrtmod(n::T, m::T) where {T<:Integer}
+    sqrtmod(n::Integer, m::Integer)
 
 Returns an unsorted list of all `0 ≤ x < m` such that ``x^2 ≡ n (mod m)``.
 
@@ -37,18 +19,24 @@ Returns an unsorted list of all `0 ≤ x < m` such that ``x^2 ≡ n (mod m)``.
     Calculating the square root of a composite number
     is computationally equivalent to integer factorization.
     If you know that `m` is prime,
-    then consider using `sqrtmodp(n, m)`,
+    consider using `sqrtmodp(n, m)`,
     which uses a polynomial time algorithm.
 """
 function sqrtmod(n::T, m::T) where {T<:Integer}
     m ≤ 0 && throw(DomainError(m, "The modulus `m` must be a positive integer"))
     m == 1 && return T[0]
 
-    factorm = factor(m)
-    N = (p^k for (p, k) in factorm)
+    return _sqrtmod(n, m, factor(m))
+end
 
+
+# For type-stability, make a seperate private function so A is type-stable.
+# Will precompile each time it encounters an m with a different number of prime factors.
+# See https://stackoverflow.com/questions/75358404/type-stability-in-julias-product-iterator
+function _sqrtmod(n::T, m::T, factorm) where {T<:Integer}
+    N = (p^k for (p, k) in factorm)
     roots = T[]
-    for A in Iterators.product((sqrtmodq(n, p, T(k)) for (p, k) in factorm)...)
+    for A in Iterators.product((_sqrtmodq(n, p, T(k)) for (p, k) in factorm)...)
         push!(roots, crt(A, N, m))
     end
 
@@ -57,14 +45,14 @@ end
 
 
 """
-    sqrtmodq(n::Integer, p::Integer, e::Integer)
+    _sqrtmodq(n::Integer, p::Integer, e::Integer)
 
 Let `q = p^k` be a prime power.
 Returns an unsorted list of all `0 ≤ x < q` such that `x^2 ≡ n (mod q)`.
 Assumes `p` is prime.
 """
-function sqrtmodq(n::T, p::T, k::T) where {T<:Integer}
-    k == 1 && return sqrtmodp(n, p)
+function _sqrtmodq(n::T, p::T, k::T) where {T<:Integer}
+    k == 1 && return sqrtmodprime(n, p)
 
     q = p^k
     n = mod(n, q)
@@ -72,7 +60,7 @@ function sqrtmodq(n::T, p::T, k::T) where {T<:Integer}
 
     # Use Hensel's lifting lemma
     roots = T[]
-    for r in sqrtmodq(n, p, k - 1)
+    for r in _sqrtmodq(n, p, k - 1)
         if mod(2r, p) != 0
             s = mod(r - (r^2 - n) * invmod(2r, p), q)
             push!(roots, s)
@@ -88,7 +76,7 @@ end
 
 
 """
-    sqrtmodp(n::Integer, p::Integer)
+    sqrtmodprime(n::Integer, p::Integer)
 
 Returns an unsorted list of all `0 ≤ x < p` such that `x^2 ≡ n (mod p)`.
 Assumes `p` is prime.
@@ -96,11 +84,11 @@ Assumes `p` is prime.
 !!! warning
     This function assumes that `p` is a prime number
     and does not check to ensure that `p` is indeed prime.
-    The behaviour of `sqrtmodp(n, p)` is undefined when `p` is not prime.
+    The behaviour of `sqrtmodprime(n, p)` is undefined when `p` is not prime.
     Only use this function if you know that `p` is prime.
-    If there is a chance that `p` is not prime, use `sqrtmod(n, p)` instead.
+    If there is a chance that `p` is not prime, use `sqrtmodprime(n, p)` instead.
 """
-function sqrtmodp(n::T, p::T) where {T<:Integer}
+function sqrtmodprime(n::T, p::T) where {T<:Integer}
     n = mod(n, p)
 
     # If n is zero, then the only solution is r = 0
@@ -146,6 +134,24 @@ function sqrtmodp(n::T, p::T) where {T<:Integer}
         (Rb, flag) = Base.mul_with_overflow(R, b)
         R = flag ? T(mod(widemul(R, b), p)) : mod(Rb, p)
     end
+end
+
+
+# Chinese Remainder Theorem
+function crt(a, n, m::T) where {T<:Integer}
+    ans = zero(T)
+    for (ai, ni) in zip(a, n)
+        u = m ÷ ni
+        x = invmod(u, ni) * u
+
+        (y, flag) = Base.mul_with_overflow(ai, x)
+        x = flag ? T(mod(widemul(ai, x), m)) : mod(y, m)
+
+        (y, flag) = Base.add_with_overflow(ans, x)
+        ans = flag ? T(mod(widen(ans) + widen(x), m)) : mod(y, m)
+    end
+
+    return ans
 end
 
 end  # module ModularSquareRoots
