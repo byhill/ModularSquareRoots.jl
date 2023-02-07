@@ -18,7 +18,7 @@ julia> sqrtmod(4, 5)
  3
  2
 
-julia> all(powermod(x, 2, 5) == 4 for x in sqrtmod)
+julia> all(powermod(x, 2, 5) == 4 for x in sqrtmod(4, 5))
 true
 
 julia> sqrtmod(1240, 289032)
