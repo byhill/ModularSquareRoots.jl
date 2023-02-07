@@ -10,7 +10,7 @@ this module provides support for solving the congruence `x^2 ≡ n (mod m)`.
 
 The module exports the function `sqrtmod(n, m)`.
 
-```[julia-repl]
+```julia
 julia> using ModularSquareRoots
 
 julia> sqrtmod(4, 5)
