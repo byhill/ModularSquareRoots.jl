@@ -1,7 +1,7 @@
 name = "ModularSquareRoots"
 uuid = "544cf62c-00ce-4949-a641-e1b79df66db1"
 authors = ["byhill <byhill.xi1ej@dralias.com> and contributors"]
-version = "0.1.0"
+version = "0.1.1"
 
 [deps]
 Primes = "27ebfcd6-29c5-5fa9-bf4b-fb8fc14df3ae"
