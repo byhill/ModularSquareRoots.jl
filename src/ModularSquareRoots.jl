@@ -63,17 +63,13 @@ function sqrtmod(n::T, m::T) where {T<:Integer}
     newroots = T[]
     mm = one(T)
     for (p, e) in eachfactor(m)
-
-        # Unfortunately, `eachfactor` is not type-stable at the moment.
-        # Therefore, we need to wrap `p` to be of type `T`.
-        # See https://github.com/JuliaMath/Primes.jl/issues/151
         for a1 in _sqrtmodq(n, T(p), e)
             for a2 in roots
-                push!(newroots, crt([a1, a2], [T(p)^e, mm], T(p)^e * mm))
+                push!(newroots, crt([a1, a2], [p^e, mm], p^e * mm))
             end
         end
 
-        mm *= T(p)^e
+        mm *= p^e
         roots, newroots = newroots, roots
         empty!(newroots)
     end
