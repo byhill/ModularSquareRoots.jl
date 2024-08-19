@@ -17,6 +17,14 @@ Finds all `0 ≤ x < m` that solve the congruence ``x^2 ≡ n (mod m)``.
 
 Returns an unsorted list.
 
+!!! note
+    Calculating the square root modulo a composite number
+    is computationally equivalent to integer factorization.
+    If you know that `m` is prime, consider using [`sqrtmodprime`](@ref),
+    which uses a polynomial time algorithm.
+
+See also [`sqrtmodprime`](@ref).
+
 # Examples
 ```julia-repl
 julia> sqrtmod(4, 5)
@@ -47,13 +55,6 @@ Int64[]
 julia> !any(powermod(x, 2, 200) == 23 for x in sqrtmod(23, 200))
 true
 ```
-
-!!! note
-    Calculating the square root of a composite number
-    is computationally equivalent to integer factorization.
-    If you know that `m` is prime,
-    consider using `sqrtmodp(n, m)`,
-    which uses a polynomial time algorithm.
 """
 function sqrtmod(n::T, m::T) where {T<:Integer}
     m ≤ 0 && throw(DomainError(m, "The modulus `m` must be a positive integer"))
@@ -116,11 +117,27 @@ Returns an unsorted list of all `0 ≤ x < p` such that `x^2 ≡ n (mod p)`.
 Assumes `p` is prime.
 
 !!! warning
-    This function assumes that `p` is a prime number
-    and does not check to ensure that `p` is indeed prime.
     The behaviour of `sqrtmodprime(n, p)` is undefined when `p` is not prime.
-    Only use this function if you know that `p` is prime.
-    If there is a chance that `p` is not prime, use `sqrtmod(n, p)` instead.
+    This function assumes `p` is a prime number
+    and there are no checks to ensure `p` is prime.
+    If you can not gurantee that `p` is a prime number, use [`sqrtmod`](@ref) instead.
+
+See also [`sqrtmod`](@ref).
+
+# Examples
+```julia-repl
+julia> sqrtmodprime(16, 101)
+2-element Vector{Int64}:
+ 97
+  4
+
+julia> sqrtmodprime(15, 101)
+Int64[]
+
+julia> sqrtmodprime(0, 101)
+1-element Vector{Int64}:
+ 0
+```
 """
 function sqrtmodprime(n::T, p::T) where {T<:Integer}
     n = mod(n, p)

@@ -10,7 +10,7 @@ this module provides support for solving the congruence $x^2 \equiv n \pmod m$.
 
 To do this, you can use the function `sqrtmod(n, m)`.
 
-```julia
+```julia-repl
 julia> using ModularSquareRoots
 
 julia> sqrtmod(4, 5)
@@ -49,7 +49,7 @@ Note that there are no checks in `sqrtmodprime` to ensure that `p` is prime,
 and the output of `sqrtmodprime(n, p)` is undefined when `p` is not prime.
 The onus is on the user to use `sqrtmodprime` correctly.
 
-```julia
+```julia-repl
 julia> sqrtmodprime(16, 101)
 2-element Vector{Int64}:
  97
