@@ -11,9 +11,9 @@ sqrtmodprime(n::Integer, p::Integer) = sqrtmodprime(promote(n, p)...)
 
 
 """
-    sqrtmod(n::Integer, m::Integer)
+    sqrtmod(n, m)
 
-Finds all `0 ≤ x < m` that solve the congruence ``x^2 ≡ n (mod m)``.
+Finds all integers `0 ≤ x < m` that solve the congruence ``x^2 ≡ n \\pmod m``.
 
 Returns an unsorted list.
 
@@ -79,13 +79,15 @@ function sqrtmod(n::T, m::T) where {T<:Integer}
 end
 
 
-"""
-    _sqrtmodq(n::Integer, p::Integer, e::Integer)
+# """
+#     _sqrtmodq(n::Integer, p::Integer, e::Integer)
+#
+# Let `q = p^k` be a prime power.
+# Returns an unsorted list of all `0 ≤ x < q` such that `x^2 ≡ n (mod q)`.
+# Assumes `p` is prime.
+# """
 
-Let `q = p^k` be a prime power.
-Returns an unsorted list of all `0 ≤ x < q` such that `x^2 ≡ n (mod q)`.
-Assumes `p` is prime.
-"""
+
 function _sqrtmodq(n::T, p::T, k::Integer) where {T<:Integer}
     k == 1 && return sqrtmodprime(n, p)
 
@@ -113,8 +115,10 @@ end
 """
     sqrtmodprime(n::Integer, p::Integer)
 
-Returns an unsorted list of all `0 ≤ x < p` such that `x^2 ≡ n (mod p)`.
-Assumes `p` is prime.
+For prime `p`,
+finds all integers `0 ≤ x < m` that solve the congruence ``x^2 ≡ n \\pmod p``.
+
+Returns an unsorted list.
 
 !!! warning
     The behaviour of `sqrtmodprime(n, p)` is undefined when `p` is not prime.
