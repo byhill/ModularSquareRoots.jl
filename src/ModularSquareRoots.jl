@@ -7,11 +7,12 @@ export sqrtmodprime
 
 
 sqrtmod(n::Integer, m::Integer) = sqrtmod(promote(n, m)...)
+sqrtmodprimepower(n::Integer, p::Integer, k::Integer) = sqrtmodprimepower(promote(n, p)..., k)
 sqrtmodprime(n::Integer, p::Integer) = sqrtmodprime(promote(n, p)...)
 
 
 """
-    sqrtmod(n, m)
+    sqrtmod(n::Integer, m::Integer)
 
 Finds all integers `0 ≤ x < m` that solve the congruence ``x^2 ≡ n \\pmod m``.
 
@@ -64,7 +65,7 @@ function sqrtmod(n::T, m::T) where {T<:Integer}
     newroots = T[]
     mm = one(T)
     for (p, e) in eachfactor(m)
-        for a1 in _sqrtmodq(n, T(p), e)
+        for a1 in sqrtmodprimepower(n, T(p), e)
             for a2 in roots
                 push!(newroots, crt([a1, a2], [p^e, mm], p^e * mm))
             end
@@ -79,16 +80,23 @@ function sqrtmod(n::T, m::T) where {T<:Integer}
 end
 
 
-# """
-#     _sqrtmodq(n::Integer, p::Integer, e::Integer)
-#
-# Let `q = p^k` be a prime power.
-# Returns an unsorted list of all `0 ≤ x < q` such that `x^2 ≡ n (mod q)`.
-# Assumes `p` is prime.
-# """
+"""
+    sqrtmodprimepower(n::Integer, p::Integer, k::Integer)
 
+For prime `p` and `q = p^k`,
+finds all integers `0 ≤ x < q` that solve the congruence ``x^2 ≡ n \\pmod q``.
 
-function _sqrtmodq(n::T, p::T, k::Integer) where {T<:Integer}
+Returns an unsorted list.
+
+!!! warning
+    The behaviour of `sqrtmodprimepower(n, p, k)` is undefined when `p` is not prime.
+    This function assumes `p` is a prime number
+    and there are no checks to ensure `p` is prime.
+    If you can not gurantee that `p` is a prime number, use [`sqrtmod`](@ref) instead.
+
+See also [`sqrtmod`](@ref), [`sqrtmodprime`](@ref).
+"""
+function sqrtmodprimepower(n::T, p::T, k::Integer) where {T<:Integer}
     k == 1 && return sqrtmodprime(n, p)
 
     q = p^k
@@ -97,7 +105,7 @@ function _sqrtmodq(n::T, p::T, k::Integer) where {T<:Integer}
 
     # Use Hensel's lifting lemma
     roots = T[]
-    for r in _sqrtmodq(n, p, k - 1)
+    for r in sqrtmodprimepower(n, p, k - 1)
         if mod(2r, p) != 0
             s = mod(r - (r^2 - n) * invmod(2r, p), q)
             push!(roots, s)
@@ -116,7 +124,7 @@ end
     sqrtmodprime(n::Integer, p::Integer)
 
 For prime `p`,
-finds all integers `0 ≤ x < m` that solve the congruence ``x^2 ≡ n \\pmod p``.
+finds all integers `0 ≤ x < p` that solve the congruence ``x^2 ≡ n \\pmod p``.
 
 Returns an unsorted list.
 
