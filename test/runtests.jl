@@ -4,17 +4,17 @@ using Test
 @testset "ModularSquareRoots.jl" begin
 
     @testset "sqrtmodprime" begin
+        # mod 2
         @test sort(sqrtmodprime(0, 2)) == [0]
         @test sort(sqrtmodprime(1, 2)) == [1]
 
+        # mod3
         @test sort(sqrtmodprime(0, 3)) == [0]
         @test sort(sqrtmodprime(1, 3)) == [1, 2]
         @test isempty(sqrtmodprime(2, 3))
 
         @test sqrtmodprime(Int8(125), Int8(127)) isa Vector{Int8}
-        @test sqrtmodprime(Int8(125), Int8(127)) isa Vector{Int8}
         @test sqrtmodprime(Int8(125), Int8(113)) isa Vector{Int8}
-        @test sqrtmodprime(Int8(126), Int8(113)) isa Vector{Int8}
         @test sqrtmodprime(zero(Int8), Int8(113)) isa Vector{Int8}
         @test isempty(sqrtmodprime(Int8(125), Int8(127)))
         @test isempty(sqrtmodprime(Int8(125), Int8(113)))

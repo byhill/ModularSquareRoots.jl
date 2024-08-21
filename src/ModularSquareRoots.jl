@@ -53,7 +53,7 @@ true
 julia> sqrtmod(23, 200)
 Int64[]
 
-julia> !any(powermod(x, 2, 200) == 23 for x in sqrtmod(23, 200))
+julia> !any(powermod(x, 2, 200) == 23 for x in 0:199)
 true
 ```
 """
@@ -80,22 +80,22 @@ function sqrtmod(n::T, m::T) where {T<:Integer}
 end
 
 
-"""
-    sqrtmodprimepower(n::Integer, p::Integer, k::Integer)
-
-For prime `p` and `q = p^k`,
-finds all integers `0 ≤ x < q` that solve the congruence ``x^2 ≡ n \\pmod q``.
-
-Returns an unsorted list.
-
-!!! warning
-    The behaviour of `sqrtmodprimepower(n, p, k)` is undefined when `p` is not prime.
-    This function assumes `p` is a prime number
-    and there are no checks to ensure `p` is prime.
-    If you can not gurantee that `p` is a prime number, use [`sqrtmod`](@ref) instead.
-
-See also [`sqrtmod`](@ref), [`sqrtmodprime`](@ref).
-"""
+# """
+#     sqrtmodprimepower(n::Integer, p::Integer, k::Integer)
+#
+# For prime `p` and `q = p^k`,
+# finds all integers `0 ≤ x < q` that solve the congruence ``x^2 ≡ n \\pmod q``.
+#
+# Returns an unsorted list.
+#
+# !!! warning
+#     The behaviour of `sqrtmodprimepower(n, p, k)` is undefined when `p` is not prime.
+#     This function assumes `p` is a prime number
+#     and there are no checks to ensure `p` is prime.
+#     If you can not gurantee that `p` is a prime number, use [`sqrtmod`](@ref) instead.
+#
+# See also [`sqrtmod`](@ref), [`sqrtmodprime`](@ref).
+# """
 function sqrtmodprimepower(n::T, p::T, k::Integer) where {T<:Integer}
     k == 1 && return sqrtmodprime(n, p)
 
