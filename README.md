@@ -37,7 +37,7 @@ true
 julia> sqrtmod(23, 200)
 Int64[]
 
-julia> !any(powermod(x, 2, 200) == 23 for x in sqrtmod(23, 200))
+julia> !any(powermod(x, 2, 200) == 23 for x in 0:199)
 true
 ```
 
